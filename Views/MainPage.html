@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<html>
+
+	<title>Choose your story BOT</title>
+	<head></head>
+	<body>
+
+		{% comment %} woolololoo {% endcomment %}
+		<p> webhook_url:  {% firstof webhook_url "NOT using webhook" %} </p>
+
+		<input id="wekbook-starter" type="button" value="start" onClick="startWebhook()">
+
+		<input id="wekbook-stoper" type="button" value="stop" onClick="stopWebhook()">
+
+		{% if webhook_url %}
+			{{ '<label id="wekbook-status" style="background-color: lightgreen" >started</label>' }}
+		{% else %}
+			{{ '<label id="wekbook-status" style="background-color: red" >stoped</label>' }}
+		{% endif %}
+
+		<br>
+
+		{% for update in updates %}
+			<p> UpdateId:"+ {{ update.update_id  }} +" <strong>" + {{ update.message.from_user.name }} + "</strong>: "+ {{ update.message.text }}
+
+			{% empty %}
+				<p> No updates found </p>
+		{% endfor %}
+
+	</body>
+	<script type="text/javascript">
+
+		function makeAsyncGetHttpRequestAndLoadAnswerOnElementById(url, elemmentId){
+			var xmlhttp;
+			if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();}
+			else{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");}
+			//make the request
+
+			xmlhttp.onreadystatechange=function(){
+				console.log(xmlhttp.readyState);
+				if (xmlhttp.readyState<4) {
+					document.getElementById(elemmentId).innerHTML="Loading... ";}
+
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					document.getElementById(elemmentId).innerHTML=xmlhttp.responseText;}
+			}
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send();
+		}
+
+
+		function defaultFor(arg, val) { arg = (typeof arg === undefined) ? arg : val; }
+
+		function makeAsyncGetHttpRequestAndExecuteFunctions(url, onWaiting, onReady){
+			defaultFor(onWaiting,function(){});
+			defaultFor(onReady,function(responseText){});
+			var xmlhttp;
+			if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();}
+			else{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");}
+			//make the request
+
+			xmlhttp.onreadystatechange=function(){
+				if (xmlhttp.readyState<4) {
+					onWaiting();}
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					onReady(xmlhttp.responseText)}
+			}
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send();
+		}
+
+		function startWebhook(){
+			onWaitingFx=function(){
+				document.getElementById("wekbook-status").innerHTML="starting... ";
+				document.getElementById("wekbook-status").style.backgroundColor ="yellow";}
+
+			onReadyFx=function(responseText){
+				document.getElementById("wekbook-status").style.backgroundColor ="lightgreen";
+				document.getElementById("wekbook-status").innerHTML=responseText;}
+
+			makeAsyncGetHttpRequestAndExecuteFunctions("webhook-controller?newstatus=start",onWaitingFx, onReadyFx);
+
+		}
+
+		function stopWebhook(){
+			onWaitingFx=function(){
+				document.getElementById("wekbook-status").innerHTML="stoping... ";
+				document.getElementById("wekbook-status").style.backgroundColor ="yellow";}
+
+			onReadyFx=function(responseText){
+				document.getElementById("wekbook-status").style.backgroundColor ="red";
+				document.getElementById("wekbook-status").innerHTML=responseText;}
+
+			makeAsyncGetHttpRequestAndExecuteFunctions("webhook-controller?newstatus=stop",onWaitingFx, onReadyFx);
+		}
+
+	</script>
+</html>

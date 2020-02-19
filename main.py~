@@ -1,0 +1,167 @@
+#!/usr/bin/env python
+#
+# Copyright 2007 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+import webapp2
+import os
+from google.appengine.ext.webapp.template import render
+from httplib import HTTPException
+
+
+import telegram
+from telegram import TelegramError
+from Models.StoryPage import StoryPage
+from Models.UserMessage import UserMessage
+import json
+
+
+
+__TOKEN__ = "115911446:AAF0gmt7T8hcK1z8v2aUGH0M4n7u_ICJgtc"
+__MYBOT__ = telegram.Bot(__TOKEN__)
+__SERVER_TYPE__ = "Dev" if os.environ['SERVER_SOFTWARE'].startswith('Dev') else "Prod"
+__DEV_URL__ = "https://40c6ef4a.ngrok.io" #Development server url
+__PROD_URL__ ="https://john-becker-telegram-test-bot.appspot.com" #Production server url
+#supported ports for Webhooks: 443, 80, 88, 8443
+
+
+
+
+def EcoUpdateMessage(update):
+    """Answer back the same message the user sent
+        Args:
+            update:
+                Update object containing all the information
+    """
+    __MYBOT__.sendMessage(update.message.chat.id,update.message.text, reply_to_message_id=update.message.message_id)
+
+
+def getUpdateFromWebhookRequestBody(data):
+    """Creates an Update object from the data sent from telegram server
+        Args:
+            update:
+                the body of the telegram request
+
+        Returns:
+            Update object if the data sent was ok
+            None object if it couldn't be created
+    """
+#    try:
+    if updateJson != "":
+        updateDictionary = json.loads(str(data))
+        return telegram.Update.de_json(updateDictionary)
+#    except:
+#        return None
+
+
+
+
+
+class MainHandler(webapp2.RequestHandler):
+    def get(self):
+        #Main Page
+        try:
+            updates = __MYBOT__.getUpdates(timeout=0)
+        except TelegramError:
+            updates = None
+        finally:
+            #updates = __MYBOT__.getUpdates(timeout=0)
+            templateValues = {
+                'updates': updates,
+                'webhook_url': __MYBOT__.getWebhook()
+            }
+            mainPageTemplate = os.path.join(os.path.dirname(__file__), 'Views/MainPage.html')
+            self.response.write(render(mainPageTemplate, templateValues))
+
+        ##############################################################################
+        # try:
+        #     updates = __MYBOT__.getUpdates(timeout=30)
+        #     for update in updates:
+        #         self.response.write("<p> UpdateId:"+ update.update_id.__str__() +" <strong>" + update.message.from_user.name + "</strong>: "+ update.message.text)
+
+        # except telegram.error.TelegramError, e:
+        #     self.response.write(str(e))
+        # except HTTPException:
+        #     # I've found this case happens when you try to
+        #     # use getUpdates() but the bot has a webhook url setted
+        #     # or when there are no updates
+        #     pass
+        # self.response.write("<p> remote address " + str(self.request.remote_addr))
+        # self.response.write("<p> webhook_url: " + __MYBOT__.getWebhook())
+
+
+class MessageHandler(webapp2.RequestHandler):
+    """Process mesages sent by users"""
+    def post(self):
+        update = getUpdateFromWebhookRequestBody(self.request.body)
+        #EcoUpdateMessage(update)
+        text = update.message.text
+        if text.startswith("\/start"):
+            #pressent book list
+            __MYBOT__.sendMessage(update.message.chat.id, "Bienvenido a la Welcome")
+
+        elif text.startswith("\/read"):
+            if text[5] == " ":
+                #check book
+                    #get initial page of book
+                pass
+
+        elif text.startswith("\/store"):
+            #store text on db
+            um = UserMessage(update.message.from_user.id, text[8:])
+            #txtId = um.store()
+            um.store()
+            __MYBOT__.sendMessage(update.message.chat.id, str(um.getKeyId()))
+
+        elif text.startswith("\/getMessage"):
+            #pass
+            retreivedMsg = UserMessage.getMessageByKey(text[8:])
+            __MYBOT__.sendMessage(update.message.chat.id, retreivedMsg)
+
+
+        #elif not text.startswith("\/"):
+        #    #check what the request is
+        #    pass
+
+        else:
+            EcoUpdateMessage(update)
+
+
+
+
+class WebhookHandler(webapp2.RequestHandler):
+    def get(self):
+        """Manages webhook status
+
+            If request has  variable newstatus as 'start' it enables the service
+            If request has  variable newstatus as 'stop' or any other it disables the service
+        """
+        newStatus = self.request.get("newstatus")
+        if newStatus == "start":
+            serverURL = __DEV_URL__ if __SERVER_TYPE__ == "Dev" else __PROD_URL__
+            __MYBOT__.setWebhook(serverURL + "/webhook-"+__TOKEN__)
+            self.response.write("started")
+        elif newStatus == "stop":
+            __MYBOT__.setWebhook("")
+            self.response.write("stoped")
+
+
+
+
+#matches the sub-urls to the correct Handler
+app = webapp2.WSGIApplication([
+    ('/', MainHandler),
+    ('/webhook-'+__TOKEN__, MessageHandler),
+    ('/webhook-controller', WebhookHandler)
+], debug=True)

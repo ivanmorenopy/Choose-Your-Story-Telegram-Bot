@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>80</x>
+      <y>250</y>
+      <w>170</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>User
+--
+-activeCommand
+-name: String
+--
++Name(): String
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>510</x>
+      <y>230</y>
+      <w>200</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>Book
+--
+-author: User
+-firstPage: StoryPage
+--
++readPage(n: int): StoryPage
++fistPage(): StoryPage</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>520</x>
+      <y>460</y>
+      <w>250</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>StoryPage
+--
+-text: String
+-nextPage
+--
++getContent(): String
++assignNextPage(next: StoryPage)
+--
+Responsibilities
+--contain each page of the book</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>600</x>
+      <y>320</y>
+      <w>50</w>
+      <h>160</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=*
+has
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>240</x>
+      <y>240</y>
+      <w>290</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;&gt;
+m1=1
+m2=1
+writen 
+by</panel_attributes>
+    <additional_attributes>10.0;20.0;270.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>380</x>
+      <y>40</y>
+      <w>280</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>Library
+--
+--
++getBook(name: String)
++createBook(name: String, author: User)
+--
+Responsibilities
+--manage Books access
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>580</x>
+      <y>150</y>
+      <w>130</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.
+Can
+Create &amp; access</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>

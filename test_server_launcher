@@ -1,0 +1,1 @@
+dev_appserver.py --enable_console --enable_host_checking=False /media/john/Elephant/Ivan/Github/chooseYourStoryBot

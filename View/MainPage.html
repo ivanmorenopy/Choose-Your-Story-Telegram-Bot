@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html>
+
+	<title>Choose your story BOT</title>
+	<head></head>
+	<body>
+
+		{% comment %} woolololoo {% endcomment %}
+		<p> webhook_url:  <label id="webhook-url"> {% firstof webhook_url " NOT using webhook" %} </label> </p>
+
+		<input id="webhook-starter" type="button" value="start" onClick="startWebhook()">
+
+		<input id="webhook-stoper" type="button" value="stop" onClick="stopWebhook()">
+
+		{% if webhook_url %}
+			{{ '<label id="webhook-status" style="background-color: lightgreen" >started</label>' }}
+		{% else %}
+			{{ '<label id="webhook-status" style="background-color: red" >stoped</label>' }}
+		{% endif %}
+
+		<br>
+
+		{% for update in updates %}
+			<p> UpdateId:"+ {{ update.update_id  }} +" <strong>" + {{ update.message.from_user.name }} + "</strong>: "+ {{ update.message.text }}
+
+			{% empty %}
+				<p> No updates found </p>
+		{% endfor %}
+
+	</body>
+	<script type="text/javascript">
+
+		function makeAsyncGetHttpRequestAndLoadAnswerOnElementById(url, elemmentId){
+			var xmlhttp;
+			if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();}
+			else{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");}
+			//make the request
+
+			xmlhttp.onreadystatechange=function(){
+				console.log(xmlhttp.readyState);
+				console.log(xmlhttp.status);
+				if (xmlhttp.readyState<4) {
+					document.getElementById(elemmentId).innerHTML="Loading... ";}
+
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					document.getElementById(elemmentId).innerHTML=xmlhttp.responseText;}
+			}
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send();
+		}
+
+
+		function defaultFor(arg, val) { arg = (typeof arg === undefined) ? arg : val; }
+
+		function makeAsyncGetHttpRequestAndExecuteFunctions(url, onWaiting, onReady){
+			defaultFor(onWaiting,function(){});
+			defaultFor(onReady,function(responseText){});
+			var xmlhttp;
+			if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();}
+			else{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");}
+			//make the request
+
+			xmlhttp.onreadystatechange=function(){
+				if (xmlhttp.readyState<4) {
+					onWaiting();}
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					onReady(xmlhttp.responseText)}
+			}
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send();
+		}
+
+		function startWebhook(){
+			onWaitingFx=function(){
+				document.getElementById("webhook-status").innerHTML="starting... ";
+				document.getElementById("webhook-status").style.backgroundColor ="yellow";}
+
+			onReadyFx=function(responseText){
+				document.getElementById("webhook-status").style.backgroundColor ="lightgreen";
+				document.getElementById("webhook-status").innerHTML=responseText;
+				makeAsyncGetHttpRequestAndLoadAnswerOnElementById("webhook-controller?request=url", "webhook-url");
+				}
+
+			makeAsyncGetHttpRequestAndExecuteFunctions("webhook-controller?request=changestatus&newstatus=start",onWaitingFx, onReadyFx);
+
+		}
+
+		function stopWebhook(){
+			onWaitingFx=function(){
+				document.getElementById("webhook-status").innerHTML="stoping... ";
+				document.getElementById("webhook-status").style.backgroundColor ="yellow";}
+
+			onReadyFx=function(responseText){
+				document.getElementById("webhook-status").style.backgroundColor ="red";
+				document.getElementById("webhook-status").innerHTML=responseText;
+				makeAsyncGetHttpRequestAndLoadAnswerOnElementById("webhook-controller?request=url", "webhook-url")
+			}
+
+
+			makeAsyncGetHttpRequestAndExecuteFunctions("webhook-controller?request=changestatus&newstatus=stop",onWaitingFx, onReadyFx);
+		}
+
+	</script>
+</html>

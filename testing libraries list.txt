@@ -1,0 +1,12 @@
+pytest-mock-helper (0.2.1)                - Help you mock HTTP call and
+                                            generate mock code
+python-auto-mock (0.1.1)                  - A module to easily mock code while
+                                            testing.
+mcok (0.0.2)                              - Mock mock's Mock
+###mockhttp (0.1)                            - Utilities for mocking HTTP
+   #not found?                                         requests with Mock
+###typemock (0.5.1)                          - Type safe mocking
+   #not supported in 2.7
+mockstar (1.1.0)                          - Small mocking/unit-testing
+                                            improvements on top of mock
+                                            library
