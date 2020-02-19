@@ -1,2 +1,2 @@
 # chooseYourStoryBot
-A Telegram bot to Read and Write Stories
+A Telegram Bot to Read and Write Stories
