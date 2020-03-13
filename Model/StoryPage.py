@@ -7,11 +7,11 @@ class StoryPageEntity(ndb.Model):
     story = ndb.TextProperty(required=True)
     #pageOfBook = ndb.IntegerProperty(required=True)
 
-    nextPageOption1 = ndb.KeyProperty(kind="StoryPageEntity")
-    nextPageOption1Description = ndb.StringProperty()
+    nextPageOption1 = ndb.KeyProperty(kind="StoryPageEntity", required=False)
+    nextPageOption1Description = ndb.StringProperty(required=False)
 
-    nextPageOption2 = ndb.KeyProperty(kind="StoryPageEntity")
-    nextPageOption2Description = ndb.StringProperty()
+    nextPageOption2 = ndb.KeyProperty(kind="StoryPageEntity", required=False)
+    nextPageOption2Description = ndb.StringProperty(required=False)
 
 
 
@@ -21,9 +21,9 @@ class StoryPage(object):
         if isinstance(story, StoryPageEntity):
             self._entity = story
         else:
-            self._entity = StoryPageEntity(story=story, #pageOfBook=pageOfBook
-                            nextPageOption1=next1, nextPageOption1Description=description1,
-                            nextPageOption2=next2, nextPageOption2Description=description2)
+            self._entity = StoryPageEntity(story=story)#, #pageOfBook=pageOfBook)
+                            #nextPageOption1=next1, nextPageOption1Description=description1,
+                            #nextPageOption2=next2, nextPageOption2Description=description2)
         self.nextPageOption1 = self._entity.nextPageOption1
         self.nextPageOption2 = self._entity.nextPageOption2
         self.nextPageOption1Description = self._entity.nextPageOption1Description

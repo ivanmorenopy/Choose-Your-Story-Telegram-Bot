@@ -28,6 +28,6 @@ from secrets import __TOKEN__
 #matches the sub-urls to the correct Handler
 app = webapp2.WSGIApplication([
     ('/', MainPageController),
-    ('/webhook-'+__TOKEN__, MessageController),
+    ('/webhook-'+__TOKEN__(), MessageController),
     ('/webhook-controller', WebhookController)
 ], debug=True)

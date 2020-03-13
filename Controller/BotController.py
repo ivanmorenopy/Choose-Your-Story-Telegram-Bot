@@ -1,10 +1,11 @@
-kimport telegram
+import telegram
 from threading import Lock, Thread
 import webapp2
 
 
 
-__TOKEN__ = "115911446:AAF0gmt7T8hcK1z8v2aUGH0M4n7u_ICJgtc"
+#from secrets import __TOKEN__
+from SecretFolder.secrets import __TOKEN__
 
 
 #No uso la clase singleton hasta que sepa como usarla correctamente
@@ -50,7 +51,7 @@ class BotController(webapp2.RequestHandler):
 			with BotController._lock:
 				if BotController._instance is None:
 					BotController._instance = super(BotController, cls).__new__(cls)
-					BotController.__MYBOT__ = telegram.Bot(__TOKEN__)
+					BotController.__MYBOT__ = telegram.Bot(__TOKEN__())
 		return BotController._instance
 
 

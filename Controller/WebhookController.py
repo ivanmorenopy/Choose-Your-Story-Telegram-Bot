@@ -2,10 +2,10 @@ import webapp2
 from BotController import BotController
 import os
 
-from secrets import (__TOKEN__,
-                    __DEV_URL__,
-                    __PROD_URL__,
-                    __SERVER_TYPE__)
+from SecretFolder.secrets import( __TOKEN__,
+                                __DEV_URL__,
+                                __PROD_URL__,
+                                __SERVER_TYPE__)
 
 class WebhookController(webapp2.RequestHandler):
     def get(self):
@@ -20,8 +20,8 @@ class WebhookController(webapp2.RequestHandler):
         if self.request.get("request") == "changestatus":
             newStatus = self.request.get("newstatus")
             if newStatus == "start":
-                serverURL = __DEV_URL__ if __SERVER_TYPE__ == "Dev" else __PROD_URL__
-                __MYBOT__.setWebhook(serverURL + "/webhook-"+__TOKEN__)
+                serverURL = __DEV_URL__() if __SERVER_TYPE__() == "Dev" else __PROD_URL__()
+                __MYBOT__.setWebhook(serverURL + "/webhook-" + __TOKEN__())
                 self.response.write("started")
             elif newStatus == "stop":
                 __MYBOT__.setWebhook("")
